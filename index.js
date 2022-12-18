@@ -37,6 +37,7 @@ async function run() {
     try {
         const usersCollection = client.db("orginal-fashion").collection("users");
         const bannersCollection = client.db("orginal-fashion").collection("banners");
+        const categoryCollection = client.db("orginal-fashion").collection("category");
         // const categoriesCollection = client.db("used-products-resale-portal").collection("categories");
         // const productsCollection = client.db("used-products-resale-portal").collection("products");
         // const bookingsCollection = client.db("used-products-resale-portal").collection("bookings");
@@ -135,6 +136,22 @@ async function run() {
         app.get('/banner', async (req, res) => {
             const query = {}
             const users = await bannersCollection.find(query).toArray()
+            res.send(users)
+        })
+
+
+        //Add category Admin
+        app.post('/addCategory', verifyJWT, async (req, res) => {
+            const banner = req.body;
+            const result = await categoryCollection.insertOne(banner);
+            const id =
+                res.send(result);
+        })
+
+        //All category 
+        app.get('/category', async (req, res) => {
+            const query = {}
+            const users = await categoryCollection.find(query).toArray()
             res.send(users)
         })
 
