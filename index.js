@@ -39,7 +39,7 @@ async function run() {
         const bannersCollection = client.db("orginal-fashion").collection("banners");
         const categoryCollection = client.db("orginal-fashion").collection("category");
         // const categoriesCollection = client.db("used-products-resale-portal").collection("categories");
-        // const productsCollection = client.db("used-products-resale-portal").collection("products");
+        const productsCollection = client.db("orginal-fashion").collection("products");
         // const bookingsCollection = client.db("used-products-resale-portal").collection("bookings");
         // const wishlistsCollection = client.db("used-products-resale-portal").collection("wishlists");
         // const paymentsCollection = client.db("used-products-resale-portal").collection("payments");
@@ -155,6 +155,39 @@ async function run() {
             res.send(users)
         })
 
+
+        //add product
+        app.post('/addProduct', verifyJWT, async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            const id =
+                res.send(result);
+        })
+
+        //All product get
+        app.get('/products', async (req, res) => {
+            const query = {};
+            const result = await productsCollection.find(query).toArray()
+            res.send(result);
+        });
+
+        //Seller product get
+        app.get('/products/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await productsCollection.find(query).toArray()
+            res.send(result);
+        });
+
+
+        // product delete
+        app.delete('/products/:id', verifyJWT, verifySeller, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
+        })
+
         // ------------------------------------------------------
 
 
@@ -194,29 +227,10 @@ async function run() {
 
 
 
-        //All product get
-        app.get('/products', async (req, res) => {
-            const query = {};
-            const result = await productsCollection.find(query).toArray()
-            res.send(result);
-        });
-
-        //Seller product get
-        app.get('/products/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email }
-            const result = await productsCollection.find(query).toArray()
-            res.send(result);
-        });
 
 
-        //Seller add product
-        app.post('/addProduct', verifyJWT, verifySeller, async (req, res) => {
-            const product = req.body;
-            const result = await productsCollection.insertOne(product);
-            const id =
-                res.send(result);
-        })
+
+
 
         //Get Advertise
         app.get('/advertise', async (req, res) => {
@@ -259,13 +273,7 @@ async function run() {
 
         })
 
-        // Seller delete
-        app.delete('/products/:id', verifyJWT, verifySeller, async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await productsCollection.deleteOne(query);
-            res.send(result);
-        })
+
 
 
 
